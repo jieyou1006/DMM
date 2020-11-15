@@ -15,13 +15,118 @@ namespace GETMOOTOOL
 {
     public partial class Form1 : Form
     {
+        private static string strSearchUrl = "https://avmoo.cyou/cn/search/";
         public Form1()
         {
             InitializeComponent();
+            this.textBoxSearchUrl.Text = strSearchUrl;
         }
 
         DataClass data = new DataClass();
         FileClass f = new FileClass();
+
+        //从code查询页面开始，多个code需要以逗号分隔开来
+        private void but_ok1_Click(object sender, EventArgs e)
+        {
+            if (textBoxCode.Text.Trim().Length < 1)
+            {
+                SetListBoxMessage("Code不能为空");
+                return;
+            }
+            string[] strCodes = textBoxCode.Text.Trim().ToUpper().Split(',');
+
+            foreach (string code in strCodes)
+            {
+                if (code.Trim().Length > 0)
+                {
+                    if (data.CheckMo(code.Trim()))
+                    {
+                        SetListBoxMessage("已经收录此影片");
+                        continue;
+                    }
+
+                    string url = "";
+                    string strSmallImgUrl = "";
+                    try
+                    {
+                        //从CODE开始
+                        
+                        string urlSearch = textBoxSearchUrl.Text.Trim() + code.Trim();  //"https://avmask.com/cn/search/ATID-394";
+                        
+                        HtmlWeb web = new HtmlWeb();
+                        //从url中加载
+                        HtmlDocument sdoc = web.Load(urlSearch);
+
+                        //2种方式获取搜索结果的url
+                        //HtmlNodeCollection sNode = sdoc.DocumentNode.SelectNodes("//*[@id='waterfall']");
+                        //url = sNode[0].SelectSingleNode(".//a").Attributes["href"].Value;
+                        try
+                        {
+                            HtmlNode tNode = sdoc.DocumentNode.SelectSingleNode("//h4");
+                            if (tNode.InnerText.Trim().Contains("搜寻没有结果"))
+                            {
+                                SetListBoxMessage("Code：" + code + " 没有找到");
+                                continue;
+                            }
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+
+                        //HtmlNodeCollection aNode = doc.DocumentNode.SelectNodes("//*[@class='col-md-9 screencap']");  //*号代表通配符，表示所有class为此名的节点
+                        //HtmlNode img = aNode[0].SelectSingleNode(".//img");
+                        //strImgUrl = aNode[0].SelectSingleNode(".//img").Attributes["src"].Value;  //img.Attributes["src"].Value;
+
+                        //HtmlNode sNode = sdoc.DocumentNode.SelectSingleNode("//div[@id='waterfall']");
+                        HtmlNodeCollection nodes = sdoc.DocumentNode.SelectNodes("//a[@class='movie-box']");
+                        foreach (var item in nodes)
+                        {
+                            HtmlNode sNode = item.SelectSingleNode(".//date");
+                            if (sNode.InnerHtml.Trim().ToUpper() == code.Trim())
+                            {
+                                //HtmlNodeCollection htmlNodesUrl = item.SelectNodes(".//href");
+                                url = item.Attributes["href"].Value;
+
+                                //HtmlNodeCollection htmlNodesIndexImgUrl = item.SelectNodes(".//img");
+                                strSmallImgUrl = item.SelectSingleNode(".//img").Attributes["src"].Value;//htmlNodesIndexImgUrl[0].Attributes["src"].Value;
+                                break;
+                            }
+                        }
+                        //HtmlNodeCollection htmlNodesUrl = sNode.SelectNodes(".//a");
+                        //HtmlNodeCollection htmlNodesIndexImgUrl = sNode.SelectNodes(".//img");
+                        //url = htmlNodesUrl[0].Attributes["href"].Value;
+                        //strSmallImgUrl = htmlNodesIndexImgUrl[0].Attributes["src"].Value;
+
+                        SetListBoxMessage(url);
+                        SetListBoxMessage(strSmallImgUrl);
+                    }
+                    catch (Exception)
+                    {
+                        SetListBoxMessage("CODE没有搜索到结果，中断执行。");
+                        return;
+                    }
+
+                    GetMovieIndexHtmlInfo(url, strSmallImgUrl);
+                }
+
+
+            }
+
+
+        }
+
+        //从影片主页开始
+        private void but_ok2_Click(object sender, EventArgs e)
+        {
+            //从影片主页开始
+            if (textBoxUrl.Text.Trim().Length < 1)
+            {
+                SetListBoxMessage("URL不能为空");
+                return;
+            }
+            GetMovieIndexHtmlInfo(textBoxUrl.Text.Trim(), "");
+        }
 
         /// <summary>
         /// GetMovieIndexPageInfo
@@ -413,81 +518,6 @@ namespace GETMOOTOOL
             }
 
             return boolResult;
-        }
-
-        private void but_ok1_Click(object sender, EventArgs e)
-        {
-            if (textBoxCode.Text.Trim().Length < 1)
-            {
-                SetListBoxMessage("Code不能为空");
-                return;
-            }
-            string[] strCodes = textBoxCode.Text.Trim().ToUpper().Split(',');
-
-            foreach (string code in strCodes)
-            {
-                if (code.Trim().Length > 0)
-                {
-                    //从CODE开始
-                    string strSmallImgUrl = "";
-                    string urlSearch = textBoxSearchUrl.Text.Trim() + code.Trim();  //"https://avmask.com/cn/search/ATID-394";
-                    string url = "";
-                    HtmlWeb web = new HtmlWeb();
-                    //从url中加载
-                    HtmlDocument sdoc = web.Load(urlSearch);
-
-                    try
-                    {
-                        //2种方式获取搜索结果的url
-                        //HtmlNodeCollection sNode = sdoc.DocumentNode.SelectNodes("//*[@id='waterfall']");
-                        //url = sNode[0].SelectSingleNode(".//a").Attributes["href"].Value;
-                        try
-                        {
-                            HtmlNode tNode = sdoc.DocumentNode.SelectSingleNode("//h4");
-                            if (tNode.InnerText.Trim().Contains("搜寻没有结果"))
-                            {
-                                SetListBoxMessage("Code：" + code + " 没有找到");
-                                continue;
-                            }
-                        }
-                        catch(Exception)
-                        {
-
-                        }
-
-                        HtmlNode sNode = sdoc.DocumentNode.SelectSingleNode("//div[@id='waterfall']");
-                        HtmlNodeCollection htmlNodesUrl = sNode.SelectNodes(".//a");
-                        HtmlNodeCollection htmlNodesIndexImgUrl = sNode.SelectNodes(".//img");
-                        url = htmlNodesUrl[0].Attributes["href"].Value;
-                        strSmallImgUrl = htmlNodesIndexImgUrl[0].Attributes["src"].Value;
-
-                        SetListBoxMessage(url);
-                        SetListBoxMessage(strSmallImgUrl);
-                    }
-                    catch (Exception)
-                    {
-                        SetListBoxMessage("CODE没有搜索到结果，中断执行。");
-                        return;
-                    }
-
-                    GetMovieIndexHtmlInfo(url, strSmallImgUrl);
-                }
-
-
-            }
-
-
-        }
-
-        private void but_ok2_Click(object sender, EventArgs e)
-        {
-            //从影片主页开始
-            if (textBoxUrl.Text.Trim().Length < 1)
-            {
-                SetListBoxMessage("URL不能为空");
-                return;
-            }
-            GetMovieIndexHtmlInfo(textBoxUrl.Text.Trim(), "");
         }
 
         //ListBox输出信息
