@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - XXXXXXXXXX</title>
+    @Scripts.Render("~/Scripts/jquery-3.4.1.min.js")
+    @Styles.Render("~/Content/bootstrap.min.css")
+    @Scripts.Render("~/Scripts/bootstrap.min.js")
+    @Styles.Render("~/Content/app.min.css")
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top top-bar">
+        <div id="app_top" class="container-fluid">
+            <div id="navbar" class="collapse navbar-collapse">
+                <form class="navbar-form navbar-left fullsearch-form">
+                    <div class="input-group">
+                        <input name="keyword" type="text" class="form-control" placeholder="搜寻 识别码, 影片, 演员">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">搜寻</button>
+                        </span>
+                    </div>
+                </form>
+                <ul class="nav navbar-nav">
+                    <li id="index"><a href="@Url.Action("Index","MOO")">全部</a></li>
+                    <li id="actresses"><a href="@Url.Action("Actresses","MOO")">女优</a></li>
+                    <li id="genre"><a href="@Url.Action("Genre","MOO")">类别</a></li>
+                </ul>
+            </div>
+        </div>
+        <script>
+            $(function () {
+                //切换选中
+                if ('@ViewBag.Title' == 'Genre') {
+                    $("#genre").addClass('active');
+                }
+                else if ('@ViewBag.Title' == 'Index') {
+                    $("#index").addClass('active');
+                }
+                else {
+                    $("#actresses").addClass('active');
+                }
+                
+                //$("#nav navbar-nav li").click(function () {
+                //    $(this).siblings('li').removeClass('active');  // 删除其他兄弟元素的样式
+                //    $(this).addClass('active');                    // 添加当前元素的样式
+                //});
+            });
+         </script>
+    </nav>
+
+    <div class="container body-content" style="text-align:center;">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy;JieYou 2020 -  @DateTime.Now.Year</p>
+        </footer>
+    </div>
+</body>
+</html>

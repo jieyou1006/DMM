@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30002.166
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GETMOOTOOL", "GETMOOTOOL.csproj", "{4C8C45C5-4D5E-4AF6-A903-E3BA431E010C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4C8C45C5-4D5E-4AF6-A903-E3BA431E010C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C8C45C5-4D5E-4AF6-A903-E3BA431E010C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C8C45C5-4D5E-4AF6-A903-E3BA431E010C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C8C45C5-4D5E-4AF6-A903-E3BA431E010C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E1682FF1-28F4-442A-A2AF-E77576D88E35}
+	EndGlobalSection
+EndGlobal
