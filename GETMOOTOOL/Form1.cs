@@ -19,6 +19,7 @@ namespace GETMOOTOOL
         public Form1()
         {
             InitializeComponent();
+            this.lbl_Count.Text = "";
             this.textBoxSearchUrl.Text = strSearchUrl;
         }
 
@@ -34,14 +35,16 @@ namespace GETMOOTOOL
                 return;
             }
             string[] strCodes = textBoxCode.Text.Trim().ToUpper().Split(',');
-
+            int intCount = 0;
             foreach (string code in strCodes)
             {
+                intCount++;
+                lbl_Count.Text = string.Format("{0}/{1}", intCount, strCodes.Length);
                 if (code.Trim().Length > 0)
                 {
                     if (data.CheckMo(code.Trim()))
                     {
-                        SetListBoxMessage("已经收录此影片");
+                        SetListBoxMessage("已经收录此影片:"+ code.Trim());
                         continue;
                     }
 
@@ -50,8 +53,8 @@ namespace GETMOOTOOL
                     try
                     {
                         //从CODE开始
-                        
-                        string urlSearch = textBoxSearchUrl.Text.Trim() + code.Trim();  //"https://avmask.com/cn/search/ATID-394";
+
+                        string urlSearch = textBoxSearchUrl.Text.Trim() + code.Trim();
                         
                         HtmlWeb web = new HtmlWeb();
                         //从url中加载

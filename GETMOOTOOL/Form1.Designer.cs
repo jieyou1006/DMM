@@ -37,6 +37,7 @@
             this.textBoxSearchUrl = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.listBoxResult = new System.Windows.Forms.ListBox();
+            this.lbl_Count = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // but_ok1
@@ -118,11 +119,21 @@
             this.listBoxResult.Size = new System.Drawing.Size(766, 664);
             this.listBoxResult.TabIndex = 8;
             // 
+            // lbl_Count
+            // 
+            this.lbl_Count.AutoSize = true;
+            this.lbl_Count.Location = new System.Drawing.Point(524, 92);
+            this.lbl_Count.Name = "lbl_Count";
+            this.lbl_Count.Size = new System.Drawing.Size(23, 12);
+            this.lbl_Count.TabIndex = 9;
+            this.lbl_Count.Text = "123";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(790, 898);
+            this.Controls.Add(this.lbl_Count);
             this.Controls.Add(this.listBoxResult);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.textBoxSearchUrl);
@@ -150,6 +161,7 @@
         private System.Windows.Forms.TextBox textBoxSearchUrl;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ListBox listBoxResult;
+        private System.Windows.Forms.Label lbl_Count;
     }
 }
 
