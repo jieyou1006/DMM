@@ -52,7 +52,7 @@
             // 
             // but_ok2
             // 
-            this.but_ok2.Location = new System.Drawing.Point(585, 160);
+            this.but_ok2.Location = new System.Drawing.Point(585, 188);
             this.but_ok2.Name = "but_ok2";
             this.but_ok2.Size = new System.Drawing.Size(80, 30);
             this.but_ok2.TabIndex = 1;
@@ -62,14 +62,15 @@
             // 
             // textBoxCode
             // 
-            this.textBoxCode.Location = new System.Drawing.Point(113, 83);
+            this.textBoxCode.Location = new System.Drawing.Point(113, 49);
+            this.textBoxCode.Multiline = true;
             this.textBoxCode.Name = "textBoxCode";
-            this.textBoxCode.Size = new System.Drawing.Size(398, 21);
+            this.textBoxCode.Size = new System.Drawing.Size(398, 139);
             this.textBoxCode.TabIndex = 2;
             // 
             // textBoxUrl
             // 
-            this.textBoxUrl.Location = new System.Drawing.Point(113, 166);
+            this.textBoxUrl.Location = new System.Drawing.Point(113, 194);
             this.textBoxUrl.Name = "textBoxUrl";
             this.textBoxUrl.Size = new System.Drawing.Size(398, 21);
             this.textBoxUrl.TabIndex = 3;
@@ -86,7 +87,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(11, 169);
+            this.label2.Location = new System.Drawing.Point(11, 197);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(101, 12);
             this.label2.TabIndex = 5;

@@ -15,7 +15,7 @@ namespace GETMOOTOOL
 {
     public partial class Form1 : Form
     {
-        private static string strSearchUrl = "https://avmoo.cyou/cn/search/";
+        private static string strSearchUrl = "https://avmoo.casa/cn/search/";
         public Form1()
         {
             InitializeComponent();
@@ -25,6 +25,7 @@ namespace GETMOOTOOL
 
         DataClass data = new DataClass();
         FileClass f = new FileClass();
+        CommClass cc = new CommClass();
 
         //从code查询页面开始，多个code需要以逗号分隔开来
         private void but_ok1_Click(object sender, EventArgs e)
@@ -143,7 +144,7 @@ namespace GETMOOTOOL
             m.SmallImgUrl = strSmallImgUrl;
 
             HtmlWeb web = new HtmlWeb();
-            HtmlDocument doc = web.Load(strUrl);  //加载影片主页
+            HtmlDocument doc = web.Load(cc.CheckUrl(strUrl));  //加载影片主页
 
             //获取影片代码和影片名字
             HtmlNode tNode = doc.DocumentNode.SelectSingleNode("//h3");
