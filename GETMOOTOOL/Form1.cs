@@ -331,7 +331,7 @@ namespace GETMOOTOOL
                     }
                     else
                     {
-                        boolGetActerInfo = GetActerIndexHtmlInfo(m.ListActerName[i].ToString(), m.ListActerImgUrl[i].ToString(), m.ListActerIndexUrl[i].ToString());
+                        boolGetActerInfo = GetActerIndexHtmlInfo(m.ListActerName[i].ToString(), cc.CheckUrl(m.ListActerImgUrl[i].ToString()), cc.CheckUrl(m.ListActerIndexUrl[i].ToString()));
                         if (!boolGetActerInfo)
                         {
                             SetListBoxMessage("获取女演员：" + m.ListActerName[i].ToString() + " 资料失败");
