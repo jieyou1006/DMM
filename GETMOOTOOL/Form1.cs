@@ -15,7 +15,7 @@ namespace GETMOOTOOL
 {
     public partial class Form1 : Form
     {
-        private static string strSearchUrl = "https://avmoo.casa/cn/search/";
+        private static string strSearchUrl = "https://avmoo.sbs/cn/search/";
         public Form1()
         {
             InitializeComponent();
