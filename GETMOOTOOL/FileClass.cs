@@ -203,7 +203,7 @@ namespace GETMOOTOOL
             }
             else
             {
-                byte[] b = GetImgFromUrl(strPathd, strUrl, m.bSmallShotImg[order - 1]);
+                 byte[] b = GetImgFromUrl(strPathd, strUrl, m.bSmallShotImg[order - 1]);
                 if (b != null)
                 {
                     m.bSmallShotImg[order - 1] = b;

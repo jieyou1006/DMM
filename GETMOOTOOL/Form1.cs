@@ -28,7 +28,7 @@ namespace GETMOOTOOL
         CommClass cc = new CommClass();
 
         //从code查询页面开始，多个code需要以逗号分隔开来
-        private void but_ok1_Click(object sender, EventArgs e)
+        private async void but_ok1_Click(object sender, EventArgs e)
         {
             if (textBoxCode.Text.Trim().Length < 1)
             {
@@ -45,7 +45,7 @@ namespace GETMOOTOOL
                 {
                     if (data.CheckMo(code.Trim()))
                     {
-                        SetListBoxMessage("已经收录此影片:"+ code.Trim());
+                        SetListBoxMessage("已经收录此影片:" + code.Trim());
                         continue;
                     }
 
@@ -56,10 +56,10 @@ namespace GETMOOTOOL
                         //从CODE开始
 
                         string urlSearch = textBoxSearchUrl.Text.Trim() + code.Trim();
-                        
+
                         HtmlWeb web = new HtmlWeb();
                         //从url中加载
-                        HtmlDocument sdoc = web.Load(urlSearch);
+                        HtmlDocument sdoc = await Task.Run(() => web.Load(urlSearch));
 
                         //2种方式获取搜索结果的url
                         //HtmlNodeCollection sNode = sdoc.DocumentNode.SelectNodes("//*[@id='waterfall']");
@@ -111,17 +111,13 @@ namespace GETMOOTOOL
                         return;
                     }
 
-                    GetMovieIndexHtmlInfo(url, strSmallImgUrl);
+                    await GetMovieIndexHtmlInfo(url, strSmallImgUrl);
                 }
-
-
             }
-
-
         }
 
         //从影片主页开始
-        private void but_ok2_Click(object sender, EventArgs e)
+        private async void but_ok2_Click(object sender, EventArgs e)
         {
             //从影片主页开始
             if (textBoxUrl.Text.Trim().Length < 1)
@@ -129,14 +125,14 @@ namespace GETMOOTOOL
                 SetListBoxMessage("URL不能为空");
                 return;
             }
-            GetMovieIndexHtmlInfo(textBoxUrl.Text.Trim(), "");
+            await GetMovieIndexHtmlInfo(textBoxUrl.Text.Trim(), "");
         }
 
         /// <summary>
         /// GetMovieIndexPageInfo
         /// </summary>
         /// <param name="strUrl"></param>
-        private void GetMovieIndexHtmlInfo(string strUrl, string strSmallImgUrl)
+        private async Task GetMovieIndexHtmlInfo(string strUrl, string strSmallImgUrl)
         {
             bool boolGetActerInfo = false;
             string strNoNameActer = "NoName";
@@ -325,13 +321,14 @@ namespace GETMOOTOOL
             {
                 for (int i = 0; i < m.ListActerName.Count; i++)
                 {
-                    if (data.CheckActer(m.ListActerName[i].ToString()))  //判断是否有此女演员资料,若无，则进入演员主页抓取资料插入表中
+                    if (await Task.Run(() => data.CheckActer(m.ListActerName[i].ToString())))  //判断是否有此女演员资料,若无，则进入演员主页抓取资料插入表中
                     {
                         boolGetActerInfo = true;
                     }
                     else
                     {
-                        boolGetActerInfo = GetActerIndexHtmlInfo(m.ListActerName[i].ToString(), cc.CheckUrl(m.ListActerImgUrl[i].ToString()), cc.CheckUrl(m.ListActerIndexUrl[i].ToString()));
+                         boolGetActerInfo = await Task.Run(() => 
+                         GetActerIndexHtmlInfo(m.ListActerName[i].ToString(), cc.CheckUrl(m.ListActerImgUrl[i].ToString()), cc.CheckUrl(m.ListActerIndexUrl[i].ToString())));
                         if (!boolGetActerInfo)
                         {
                             SetListBoxMessage("获取女演员：" + m.ListActerName[i].ToString() + " 资料失败");
@@ -345,11 +342,14 @@ namespace GETMOOTOOL
                         //由于多演员的影片每个演员专辑下都要保存图片，所以获取大小封面的方法要多跑
                         if (m.ImgUrl.Length > 0)
                         {
-                            m.ImgUrl = f.SaveMovieImg(ref m, m.Code, m.MovieName, m.ListActerName[i].ToString(), m.ImgUrl);
+                            m.ImgUrl = await Task.Run(() => 
+                            f.SaveMovieImg(ref m, m.Code, m.MovieName, m.ListActerName[i].ToString(), m.ImgUrl));
                         }
                         if (m.SmallImgUrl.Length > 0)
                         {
-                            m.SmallImgUrl = f.SaveMovieSmallImg(ref m, m.Code, m.MovieName, m.ListActerName[i].ToString(), m.SmallImgUrl);
+                            m.SmallImgUrl = await Task.Run(()=>
+                            f.SaveMovieSmallImg(ref m, m.Code, m.MovieName, m.ListActerName[i].ToString(), m.SmallImgUrl)
+                            );
                         }
 
                         for (int k = 0; k < m.ListSnapshotUrl.Count; k++)
@@ -358,11 +358,15 @@ namespace GETMOOTOOL
                             m.bSmallShotImg.Add(null);
                             if (m.ListSnapshotUrl[k].ToString().Length > 0)
                             {
-                                m.ListSnapshotUrl[k] = f.SaveMovieShotImg(ref m, m.Code, m.MovieName, m.ListActerName[i].ToString(), m.ListSnapshotUrl[k].ToString(), k + 1);
+                                m.ListSnapshotUrl[k] = await Task.Run(() =>
+                                f.SaveMovieShotImg(ref m, m.Code, m.MovieName, m.ListActerName[i].ToString(), m.ListSnapshotUrl[k].ToString(), k + 1)
+                                );
                             }
                             if (m.ListSmallSnapshotUrl[k].ToString().Length > 0)
                             {
-                                m.ListSmallSnapshotUrl[k] = f.SaveMovieSmallShotImg(ref m, m.Code, m.MovieName, m.ListActerName[i].ToString(), m.ListSmallSnapshotUrl[k].ToString(), k + 1);
+                                m.ListSmallSnapshotUrl[k] = await Task.Run(() =>
+                                f.SaveMovieSmallShotImg(ref m, m.Code, m.MovieName, m.ListActerName[i].ToString(), m.ListSmallSnapshotUrl[k].ToString(), k + 1)
+                                );
                             }
                         }
 
@@ -374,11 +378,15 @@ namespace GETMOOTOOL
                 //开始获取影片海报和快照图片，并写入到硬盘返回本地网站url更新list（无演员的情况）
                 if (m.ImgUrl.Length > 0)
                 {
-                    m.ImgUrl = f.SaveMovieImg(ref m, m.Code, m.MovieName, strNoNameActer, m.ImgUrl);
+                    m.ImgUrl = await Task.Run(() =>
+                    f.SaveMovieImg(ref m, m.Code, m.MovieName, strNoNameActer, m.ImgUrl)
+                        );
                 }
                 if (m.SmallImgUrl.Length > 0)
                 {
-                    m.SmallImgUrl = f.SaveMovieSmallImg(ref m, m.Code, m.MovieName, strNoNameActer, m.SmallImgUrl);
+                    m.SmallImgUrl = await Task.Run(() =>
+                    f.SaveMovieSmallImg(ref m, m.Code, m.MovieName, strNoNameActer, m.SmallImgUrl)
+                    );
                 }
 
                 for (int k = 0; k < m.ListSnapshotUrl.Count; k++)
@@ -387,11 +395,15 @@ namespace GETMOOTOOL
                     m.bSmallShotImg.Add(null);
                     if (m.ListSnapshotUrl[k].ToString().Length > 0)
                     {
-                        m.ListSnapshotUrl[k] = f.SaveMovieShotImg(ref m, m.Code, m.MovieName, strNoNameActer, m.ListSnapshotUrl[k].ToString(), k + 1);
+                        m.ListSnapshotUrl[k] = await Task.Run(() =>
+                            f.SaveMovieShotImg(ref m, m.Code, m.MovieName, strNoNameActer, m.ListSnapshotUrl[k].ToString(), k + 1)
+                            );
                     }
                     if (m.ListSmallSnapshotUrl[k].ToString().Length > 0)
                     {
-                        m.ListSmallSnapshotUrl[k] = f.SaveMovieSmallShotImg(ref m, m.Code, m.MovieName, strNoNameActer, m.ListSmallSnapshotUrl[k].ToString(), k + 1);
+                        m.ListSmallSnapshotUrl[k] = await Task.Run(() =>
+                        f.SaveMovieSmallShotImg(ref m, m.Code, m.MovieName, strNoNameActer, m.ListSmallSnapshotUrl[k].ToString(), k + 1)
+                        );
                     }
                 }
             }
@@ -407,29 +419,30 @@ namespace GETMOOTOOL
                 //获取影片各属性id
                 if (m.Director.Length > 0)
                 {
-                    strDirectorid = data.CheckInsertDirector(m.Director);
+                    strDirectorid = await Task.Run(()=> data.CheckInsertDirector(m.Director));
                 }
                 if (m.Maker.Length > 0)
                 {
-                    strMakerid = data.CheckInsertMaker(m.Maker);
+                    strMakerid = await Task.Run(() => data.CheckInsertMaker(m.Maker));
                 }
                 if (m.Publisher.Length > 0)
                 {
-                    strPublisherid = data.CheckInsertPublisher(m.Publisher);
+                    strPublisherid = await Task.Run(() => data.CheckInsertPublisher(m.Publisher));
                 }
                 if (m.Series.Length > 0)
                 {
-                    strSeriesid = data.CheckInsertSeries(m.Series);
+                    strSeriesid = await Task.Run(() => data.CheckInsertSeries(m.Series));
                 }
                 if (m.ListType.Count > 0)
                 {
                     foreach (var item in m.ListType)
                     {
-                        data.CheckInsertType(item.ToString());
+                        await Task.Run(() => data.CheckInsertType(item.ToString()));
                     }
                 }
 
-                if (data.InsertMovieInfo(m, strDirectorid, strMakerid, strPublisherid, strSeriesid))
+                SetListBoxMessage("开始写入影片信息到数据库");
+                if (await Task.Run(() => data.InsertMovieInfo(m, strDirectorid, strMakerid, strPublisherid, strSeriesid)))
                 {
                     SetListBoxMessage("影片抓取成功");
                 }
@@ -525,7 +538,12 @@ namespace GETMOOTOOL
         }
 
         //ListBox输出信息
-        internal void SetListBoxMessage(string str)
+        public async void SetListBoxMessage(string str)
+        {
+            await Messageswait(str);
+        }
+
+        public async Task Messageswait(string str)
         {
             if (listBoxResult.InvokeRequired)
             {
@@ -534,7 +552,7 @@ namespace GETMOOTOOL
                     listBoxResult.Items.Add(str);
                     listBoxResult.TopIndex = listBoxResult.Items.Count - (int)(listBoxResult.Height / listBoxResult.ItemHeight);
                 };
-                listBoxResult.Invoke(actionDelegate, str);
+                await Task.Run(()=> listBoxResult.Invoke(actionDelegate, str));
             }
             else
             {
