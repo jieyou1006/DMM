@@ -1,4 +1,4 @@
-﻿namespace GETMOOTOOL
+﻿namespace JAVDB
 {
     partial class Form1
     {
@@ -42,9 +42,10 @@
             // 
             // but_ok1
             // 
-            this.but_ok1.Location = new System.Drawing.Point(585, 77);
+            this.but_ok1.Location = new System.Drawing.Point(878, 116);
+            this.but_ok1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.but_ok1.Name = "but_ok1";
-            this.but_ok1.Size = new System.Drawing.Size(80, 30);
+            this.but_ok1.Size = new System.Drawing.Size(120, 45);
             this.but_ok1.TabIndex = 0;
             this.but_ok1.Text = "OK";
             this.but_ok1.UseVisualStyleBackColor = true;
@@ -52,9 +53,10 @@
             // 
             // but_ok2
             // 
-            this.but_ok2.Location = new System.Drawing.Point(585, 188);
+            this.but_ok2.Location = new System.Drawing.Point(878, 282);
+            this.but_ok2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.but_ok2.Name = "but_ok2";
-            this.but_ok2.Size = new System.Drawing.Size(80, 30);
+            this.but_ok2.Size = new System.Drawing.Size(120, 45);
             this.but_ok2.TabIndex = 1;
             this.but_ok2.Text = "OK";
             this.but_ok2.UseVisualStyleBackColor = true;
@@ -62,78 +64,86 @@
             // 
             // textBoxCode
             // 
-            this.textBoxCode.Location = new System.Drawing.Point(113, 49);
+            this.textBoxCode.Location = new System.Drawing.Point(170, 74);
+            this.textBoxCode.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBoxCode.Multiline = true;
             this.textBoxCode.Name = "textBoxCode";
-            this.textBoxCode.Size = new System.Drawing.Size(398, 139);
+            this.textBoxCode.Size = new System.Drawing.Size(595, 206);
             this.textBoxCode.TabIndex = 2;
             // 
             // textBoxUrl
             // 
-            this.textBoxUrl.Location = new System.Drawing.Point(113, 194);
+            this.textBoxUrl.Location = new System.Drawing.Point(170, 291);
+            this.textBoxUrl.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBoxUrl.Name = "textBoxUrl";
-            this.textBoxUrl.Size = new System.Drawing.Size(398, 21);
+            this.textBoxUrl.Size = new System.Drawing.Size(595, 28);
             this.textBoxUrl.TabIndex = 3;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(30, 86);
+            this.label1.Location = new System.Drawing.Point(45, 129);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(77, 12);
+            this.label1.Size = new System.Drawing.Size(116, 18);
             this.label1.TabIndex = 4;
             this.label1.Text = "从CODE开始：";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(11, 197);
+            this.label2.Location = new System.Drawing.Point(16, 296);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(101, 12);
+            this.label2.Size = new System.Drawing.Size(152, 18);
             this.label2.TabIndex = 5;
             this.label2.Text = "从影片主页开始：";
             // 
             // textBoxSearchUrl
             // 
             this.textBoxSearchUrl.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.textBoxSearchUrl.Location = new System.Drawing.Point(113, 22);
+            this.textBoxSearchUrl.Location = new System.Drawing.Point(170, 33);
+            this.textBoxSearchUrl.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBoxSearchUrl.Name = "textBoxSearchUrl";
-            this.textBoxSearchUrl.Size = new System.Drawing.Size(398, 21);
+            this.textBoxSearchUrl.Size = new System.Drawing.Size(595, 28);
             this.textBoxSearchUrl.TabIndex = 6;
             this.textBoxSearchUrl.Text = "https://avmoo.site/cn/search/";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(24, 25);
+            this.label3.Location = new System.Drawing.Point(36, 38);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(83, 12);
+            this.label3.Size = new System.Drawing.Size(125, 18);
             this.label3.TabIndex = 7;
             this.label3.Text = "CODE搜索URL：";
             // 
             // listBoxResult
             // 
             this.listBoxResult.FormattingEnabled = true;
-            this.listBoxResult.ItemHeight = 12;
-            this.listBoxResult.Location = new System.Drawing.Point(12, 231);
+            this.listBoxResult.ItemHeight = 18;
+            this.listBoxResult.Location = new System.Drawing.Point(18, 346);
+            this.listBoxResult.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.listBoxResult.Name = "listBoxResult";
-            this.listBoxResult.Size = new System.Drawing.Size(766, 664);
+            this.listBoxResult.Size = new System.Drawing.Size(1147, 994);
             this.listBoxResult.TabIndex = 8;
             // 
             // lbl_Count
             // 
             this.lbl_Count.AutoSize = true;
-            this.lbl_Count.Location = new System.Drawing.Point(524, 92);
+            this.lbl_Count.Location = new System.Drawing.Point(786, 138);
+            this.lbl_Count.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lbl_Count.Name = "lbl_Count";
-            this.lbl_Count.Size = new System.Drawing.Size(23, 12);
+            this.lbl_Count.Size = new System.Drawing.Size(35, 18);
             this.lbl_Count.TabIndex = 9;
             this.lbl_Count.Text = "123";
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(790, 898);
+            this.ClientSize = new System.Drawing.Size(1185, 1347);
             this.Controls.Add(this.lbl_Count);
             this.Controls.Add(this.listBoxResult);
             this.Controls.Add(this.label3);
@@ -144,8 +154,9 @@
             this.Controls.Add(this.textBoxCode);
             this.Controls.Add(this.but_ok2);
             this.Controls.Add(this.but_ok1);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "Form1";
-            this.Text = "GetFromMOO";
+            this.Text = "GetFromJAVDB";
             this.ResumeLayout(false);
             this.PerformLayout();
 

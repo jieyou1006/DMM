@@ -9,13 +9,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
-namespace GETMOOTOOL
+namespace JAVDB
 {
     public partial class Form1 : Form
     {
-        private static string strSearchUrl = "https://avmoo.cfd/cn/search/";
+        private static string strSearchUrl = "https://javdb.com/search?q=AAAAA&f=all";
+        private static string strBaseurl = "https://javdb.com/";
         public Form1()
         {
             InitializeComponent();
@@ -55,7 +57,7 @@ namespace GETMOOTOOL
                     {
                         //从CODE开始
 
-                        string urlSearch = textBoxSearchUrl.Text.Trim() + code.Trim();
+                        string urlSearch = textBoxSearchUrl.Text.Trim().Replace("AAAAA", code.Trim());
 
                         HtmlWeb web = new HtmlWeb();
                         //从url中加载
@@ -66,8 +68,8 @@ namespace GETMOOTOOL
                         //url = sNode[0].SelectSingleNode(".//a").Attributes["href"].Value;
                         try
                         {
-                            HtmlNode tNode = sdoc.DocumentNode.SelectSingleNode("//h4");
-                            if (tNode.InnerText.Trim().Contains("搜寻没有结果"))
+                            HtmlNode tNode = sdoc.DocumentNode.SelectSingleNode("//div[@class='empty-message']");
+                            if (tNode.InnerText.Trim().Contains("暫無內容"))
                             {
                                 SetListBoxMessage("Code：" + code + " 没有找到");
                                 continue;
@@ -83,14 +85,15 @@ namespace GETMOOTOOL
                         //strImgUrl = aNode[0].SelectSingleNode(".//img").Attributes["src"].Value;  //img.Attributes["src"].Value;
 
                         //HtmlNode sNode = sdoc.DocumentNode.SelectSingleNode("//div[@id='waterfall']");
-                        HtmlNodeCollection nodes = sdoc.DocumentNode.SelectNodes("//a[@class='movie-box']");
+                        HtmlNodeCollection nodes = sdoc.DocumentNode.SelectNodes("//div[@class='item']");
                         foreach (var item in nodes)
                         {
-                            HtmlNode sNode = item.SelectSingleNode(".//date");
+                            HtmlNode sNode = item.SelectSingleNode(".//strong");
                             if (sNode.InnerHtml.Trim().ToUpper() == code.Trim())
                             {
                                 //HtmlNodeCollection htmlNodesUrl = item.SelectNodes(".//href");
-                                url = item.Attributes["href"].Value;
+                                HtmlNode sNode2 = item.SelectSingleNode(".//a");
+                                url = strBaseurl + sNode2.Attributes["href"].Value;
 
                                 //HtmlNodeCollection htmlNodesIndexImgUrl = item.SelectNodes(".//img");
                                 strSmallImgUrl = item.SelectSingleNode(".//img").Attributes["src"].Value;//htmlNodesIndexImgUrl[0].Attributes["src"].Value;
@@ -143,18 +146,19 @@ namespace GETMOOTOOL
             HtmlDocument doc = web.Load(cc.CheckUrl(strUrl));  //加载影片主页
 
             //获取影片代码和影片名字
-            HtmlNode tNode = doc.DocumentNode.SelectSingleNode("//h3");
-
+            HtmlNode tNode = doc.DocumentNode.SelectSingleNode("//h2");
+            HtmlNodeCollection strCodeName = tNode.ChildNodes;
+            //strCodeName[1].InnerText  //code
             //有些字符不能作为文件名使用，需要替换掉
             string[] strNonFileNames = new string[] { "?", "*", ":", "<", ">", "\\", "/", "|", "\"" };
-            string strMovieNameTemp = tNode.InnerText;
+            string strMovieNameTemp = strCodeName[3].InnerText;
             foreach (string strchar in strNonFileNames)
             {
                 strMovieNameTemp = strMovieNameTemp.Replace(strchar, " ");
             }
 
             m.MovieName = strMovieNameTemp;  //用空格替换不能做文件名的字符
-            m.Code = m.MovieName.Split(' ')[0];  //这里提前获取code以便判断是否已经获取过了，提前结束
+            m.Code = strCodeName[1].InnerText;  //这里提前获取code以便判断是否已经获取过了，提前结束
             if (data.CheckMo(m.Code))
             {
                 SetListBoxMessage("已经收录此影片");
@@ -168,86 +172,59 @@ namespace GETMOOTOOL
             //HtmlNodeCollection aNode = doc.DocumentNode.SelectNodes("//*[@class='col-md-9 screencap']");  //*号代表通配符，表示所有class为此名的节点
             //HtmlNode img = aNode[0].SelectSingleNode(".//img");
             //strImgUrl = aNode[0].SelectSingleNode(".//img").Attributes["src"].Value;  //img.Attributes["src"].Value;
-            HtmlNode aNode = doc.DocumentNode.SelectSingleNode("//div[@class='col-md-9 screencap']");
+            HtmlNode aNode = doc.DocumentNode.SelectSingleNode("//a[@class='cover-container']");
             HtmlNodeCollection htmlNodesImgUrl = aNode.SelectNodes(".//img");
             m.ImgUrl = htmlNodesImgUrl[0].Attributes["src"].Value;
             SetListBoxMessage(m.ImgUrl);
 
             //获取影片的基本信息
             //HtmlNodeCollection bNode = doc.DocumentNode.SelectNodes("//*[@class='col-md-3 info']");
-            HtmlNode bNode = doc.DocumentNode.SelectSingleNode("//div[@class='col-md-3 info']");
-            HtmlNodeCollection bCollection = bNode.ChildNodes;
+            //HtmlNode bNode = doc.DocumentNode.SelectSingleNode("//div[@class='col-md-3 info']");
+            //HtmlNodeCollection bCollection = bNode.ChildNodes;
+            HtmlNode bNode = doc.DocumentNode.SelectSingleNode("//nav[@class='panel movie-panel-info']");
+            HtmlNodeCollection InfoNodes = bNode.SelectNodes(".//div");
 
-            string[] strsAllData = new string[100];
-            int icount = 0;
-            foreach (var item in bCollection)
+            foreach (var item in InfoNodes)
             {
-                if (item.ChildNodes.Count > 0)
+                string stritemName = item.Attributes["strong"].Value;
+                switch (stritemName)
                 {
-                    for (int i = 0; i < item.ChildNodes.Count; i++)
-                    {
-                        if (item.ChildNodes[i].InnerHtml.Trim().Length > 0)
+                    case "日期:":
+                        m.PublishTime = item.Attributes["span"].Value;
+                        break;
+                    case "時長:":
+                        m.Times = item.Attributes["span"].Value.Replace("分鍾", "").Replace(" ", "");
+                        break;
+                    case "導演:":
+                        m.Director = item.Attributes["a"].Value;
+                        break;
+                    case "片商:":
+                        m.Maker = item.Attributes["a"].Value;
+                        break;
+                    case "發行:":
+                        m.Publisher = item.Attributes["a"].Value;
+                        break;
+                    case "系列:":
+                        m.Series = item.Attributes["a"].Value;
+                        break;
+                    case "類別:":
+                        HtmlNodeCollection TypeNodes = item.SelectNodes(".//a");
+                        foreach (var item2 in TypeNodes)
                         {
-                            string[] strs = item.ChildNodes[i].InnerHtml.Trim().Split('>');
-                            if (strs.Length > 1)
-                            {
-                                SetListBoxMessage(strs[1].Trim().Replace("</a", ""));
-                                strsAllData[icount] = strs[1].Trim().Replace("</a", "");
-                                icount++;
-                            }
-                            else
-                            {
-                                SetListBoxMessage(item.ChildNodes[i].InnerHtml.Trim().Replace(":", ""));
-                                strsAllData[icount] = item.ChildNodes[i].InnerHtml.Trim().Replace(":", "");
-                                icount++;
-                            }
+                            m.ListType.Add(item2.InnerText);  
                         }
-                    }
-                }
-            }
+                        break;
+                    case "演員:":
+                        HtmlNodeCollection ActerNodes = item.SelectNodes(".//a");
+                        foreach (var item2 in ActerNodes)
+                        {
+                            m.ListType.Add(item2.InnerText);
+                        }
+                        break;
+                    default:
+                        break;
 
-            if (strsAllData.Length > 0)
-            {
-                for (int i = 0; i < strsAllData.Length; i++)
-                {
-                    switch (strsAllData[i])
-                    {
-                        case "识别码":
-                            m.Code = strsAllData[i + 1];
-                            break;
-                        case "发行时间":
-                            m.PublishTime = strsAllData[i + 1];
-                            break;
-                        case "长度":
-                            m.Times = strsAllData[i + 1].Replace("分钟", "");
-                            break;
-                        case "导演":
-                            m.Director = strsAllData[i + 1];
-                            break;
-                        case "制作商":
-                            m.Maker = strsAllData[i + 1];
-                            break;
-                        case "发行商":
-                            m.Publisher = strsAllData[i + 1];
-                            break;
-                        case "系列":
-                            m.Series = strsAllData[i + 1];
-                            break;
-                        case "类别":
-                            for (int j = i + 1; j < strsAllData.Length + 1; j++)
-                            {
-                                if (strsAllData[j] == null)
-                                {
-                                    break;
-                                }
-                                m.ListType.Add(strsAllData[j]);
-                            }
-                            break;
-                        default:
-                            break;
-
-                    }
-                }
+                } 
             }
 
             try
