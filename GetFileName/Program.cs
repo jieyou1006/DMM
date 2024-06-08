@@ -16,7 +16,7 @@ namespace GetFileName
         public static List<FileInfo> ListFileInfo = new List<FileInfo>();
         static void Main(string[] args)
         {
-            DirectoryInfo dir = new DirectoryInfo("O:\\迅雷下载");
+            DirectoryInfo dir = new DirectoryInfo("F:\\迅雷下载");
             GetChildDicsName(dir);
             Console.ReadLine();
         }
