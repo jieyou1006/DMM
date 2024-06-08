@@ -154,11 +154,11 @@ namespace JAVDB
             string strMovieNameTemp = strCodeName[3].InnerText;
             foreach (string strchar in strNonFileNames)
             {
-                strMovieNameTemp = strMovieNameTemp.Replace(strchar, " ");
+                strMovieNameTemp = strMovieNameTemp.Replace(strchar, "");
             }
 
-            m.MovieName = strMovieNameTemp;  //用空格替换不能做文件名的字符
-            m.Code = strCodeName[1].InnerText;  //这里提前获取code以便判断是否已经获取过了，提前结束
+            m.Code = strCodeName[1].InnerText.Trim();  //这里提前获取code以便判断是否已经获取过了，提前结束
+            m.MovieName = m.Code + " " + strMovieNameTemp.Trim();  //用空格替换不能做文件名的字符
             if (data.CheckMo(m.Code))
             {
                 SetListBoxMessage("已经收录此影片");
@@ -172,84 +172,122 @@ namespace JAVDB
             //HtmlNodeCollection aNode = doc.DocumentNode.SelectNodes("//*[@class='col-md-9 screencap']");  //*号代表通配符，表示所有class为此名的节点
             //HtmlNode img = aNode[0].SelectSingleNode(".//img");
             //strImgUrl = aNode[0].SelectSingleNode(".//img").Attributes["src"].Value;  //img.Attributes["src"].Value;
-            HtmlNode aNode = doc.DocumentNode.SelectSingleNode("//a[@class='cover-container']");
-            HtmlNodeCollection htmlNodesImgUrl = aNode.SelectNodes(".//img");
-            m.ImgUrl = htmlNodesImgUrl[0].Attributes["src"].Value;
+
+            string[] strIitemlist = new string[] { "column column-video-cover", "cover-container" };
+            foreach (string strchar in strIitemlist)
+            {
+                try
+                {
+                    HtmlNode aNode = doc.DocumentNode.SelectSingleNode(string.Format("//div[@class='{0}']", strchar));
+                    if(aNode != null)
+                    {
+                        HtmlNodeCollection htmlNodesImgUrl = aNode.SelectNodes(".//img");
+                        m.ImgUrl = htmlNodesImgUrl[0].Attributes["src"].Value;
+                        break;
+                    }
+                }
+                catch 
+                { 
+                }
+            }
+            //HtmlNode aNode = doc.DocumentNode.SelectSingleNode("//a[@class='cover-container']");
             SetListBoxMessage(m.ImgUrl);
 
             //获取影片的基本信息
             //HtmlNodeCollection bNode = doc.DocumentNode.SelectNodes("//*[@class='col-md-3 info']");
             //HtmlNode bNode = doc.DocumentNode.SelectSingleNode("//div[@class='col-md-3 info']");
             //HtmlNodeCollection bCollection = bNode.ChildNodes;
-            HtmlNode bNode = doc.DocumentNode.SelectSingleNode("//nav[@class='panel movie-panel-info']");
-            HtmlNodeCollection InfoNodes = bNode.SelectNodes(".//div");
 
-            foreach (var item in InfoNodes)
-            {
-                string stritemName = item.Attributes["strong"].Value;
-                switch (stritemName)
-                {
-                    case "日期:":
-                        m.PublishTime = item.Attributes["span"].Value;
-                        break;
-                    case "時長:":
-                        m.Times = item.Attributes["span"].Value.Replace("分鍾", "").Replace(" ", "");
-                        break;
-                    case "導演:":
-                        m.Director = item.Attributes["a"].Value;
-                        break;
-                    case "片商:":
-                        m.Maker = item.Attributes["a"].Value;
-                        break;
-                    case "發行:":
-                        m.Publisher = item.Attributes["a"].Value;
-                        break;
-                    case "系列:":
-                        m.Series = item.Attributes["a"].Value;
-                        break;
-                    case "類別:":
-                        HtmlNodeCollection TypeNodes = item.SelectNodes(".//a");
-                        foreach (var item2 in TypeNodes)
-                        {
-                            m.ListType.Add(item2.InnerText);  
-                        }
-                        break;
-                    case "演員:":
-                        HtmlNodeCollection ActerNodes = item.SelectNodes(".//a");
-                        foreach (var item2 in ActerNodes)
-                        {
-                            m.ListType.Add(item2.InnerText);
-                        }
-                        break;
-                    default:
-                        break;
 
-                } 
-            }
+            //HtmlNode bNode = doc.DocumentNode.SelectSingleNode("//nav[@class='panel movie-panel-info']");
+            //HtmlNodeCollection InfoNodes = bNode.SelectNodes(".//div");
+
+            //foreach (var item in InfoNodes)
+            //{
+            //    string stritemName = item.Attributes["strong"].Value;
+            //    switch (stritemName)
+            //    {
+            //        case "日期:":
+            //            m.PublishTime = item.Attributes["span"].Value;
+            //            break;
+            //        case "時長:":
+            //            m.Times = item.Attributes["span"].Value.Replace("分鍾", "").Replace(" ", "");
+            //            break;
+            //        case "導演:":
+            //            m.Director = item.Attributes["a"].Value;
+            //            break;
+            //        case "片商:":
+            //            m.Maker = item.Attributes["a"].Value;
+            //            break;
+            //        case "發行:":
+            //            m.Publisher = item.Attributes["a"].Value;
+            //            break;
+            //        case "系列:":
+            //            m.Series = item.Attributes["a"].Value;
+            //            break;
+            //        case "類別:":
+            //            HtmlNodeCollection TypeNodes = item.SelectNodes(".//a");
+            //            foreach (var item2 in TypeNodes)
+            //            {
+            //                m.ListType.Add(item2.InnerText);  
+            //            }
+            //            break;
+            //        case "演員:":
+            //            HtmlNodeCollection ActerNodes = item.SelectNodes(".//a");
+            //            foreach (var item2 in ActerNodes)
+            //            {
+            //                m.ListType.Add(item2.InnerText);
+            //            }
+            //            break;
+            //        default:
+            //            break;
+
+            //    } 
+            //}
 
             try
             {
                 //获取女演员的姓名、主页和照片
-                HtmlNode cNode = doc.DocumentNode.SelectSingleNode("//div[@id='avatar-waterfall']");
-                HtmlNodeCollection htmlNodesActerIndex = cNode.SelectNodes(".//a");  //获取下面的全部a标签
-                HtmlNodeCollection htmlNodesActerImg = cNode.SelectNodes(".//img");  //获取下面的全部img标签
-                HtmlNodeCollection htmlNodesActerName = cNode.SelectNodes(".//span");//获取下面的全部span标签
+                HtmlNode cNode = doc.DocumentNode.SelectSingleNode("//nav[@class='panel movie-panel-info']");
+                HtmlNodeCollection htmlMovieInfo = cNode.SelectNodes("//div[@class='panel-block']");
 
-                foreach (var item in htmlNodesActerIndex)
+                //HtmlNodeCollection htmlNodesActerIndex = cNode.SelectNodes(".//a");  //获取下面的全部a标签
+                //HtmlNodeCollection htmlNodesActerImg = cNode.SelectNodes(".//img");  //获取下面的全部img标签
+                //HtmlNodeCollection htmlNodesActerName = cNode.SelectNodes(".//span");//获取下面的全部span标签
+
+                foreach (var item in htmlMovieInfo)
                 {
-                    m.ListActerIndexUrl.Add(item.Attributes["href"].Value);
-                    SetListBoxMessage(item.Attributes["href"].Value);
+                    HtmlNodeCollection htmlNodesActer = item.SelectNodes(".//strong");
+                    if (htmlNodesActer.Count > 0)
+                    {
+                        if (htmlNodesActer[0].InnerHtml == "演員:")
+                        {
+                            HtmlNodeCollection htmlNodesActerName = item.SelectNodes(".//a");
+                            if (htmlNodesActerName.Count > 0)
+                            {
+                                foreach (var item2 in htmlNodesActerName)
+                                {
+                                    m.ListActerName.Add(item2.InnerHtml.Trim());
+                                    SetListBoxMessage(item2.InnerHtml.Trim());
+
+                                    m.ListActerIndexUrl.Add(item2.Attributes["href"].Value);
+                                    SetListBoxMessage(item2.Attributes["href"].Value);
+                                }
+                            }
+                            break;
+                        }
+                    }
                 }
-                foreach (var item in htmlNodesActerImg)
-                {
-                    m.ListActerImgUrl.Add(item.Attributes["src"].Value);
-                    SetListBoxMessage(item.Attributes["src"].Value);
-                }
-                foreach (var item in htmlNodesActerName)
-                {
-                    m.ListActerName.Add(item.InnerHtml.Trim());
-                    SetListBoxMessage(item.InnerHtml.Trim());
-                }
+                //foreach (var item in htmlNodesActerImg)
+                //{
+                //    m.ListActerImgUrl.Add(item.Attributes["src"].Value);
+                //    SetListBoxMessage(item.Attributes["src"].Value);
+                //}
+                //foreach (var item in htmlMovieInfo)
+                //{
+                //    m.ListActerName.Add(item.InnerHtml.Trim());
+                //    SetListBoxMessage(item.InnerHtml.Trim());
+                //}
             }
             catch (Exception)
             {
@@ -257,36 +295,36 @@ namespace JAVDB
                 SetListBoxMessage("无演员名单");
             }
 
-            try
-            {
-                //获取影片快照
-                HtmlNodeCollection dNode = doc.DocumentNode.SelectNodes("//a[@class='sample-box']");
-                foreach (var item in dNode)
-                {
-                    m.ListSnapshotUrl.Add(item.Attributes["href"].Value);
-                    SetListBoxMessage(item.Attributes["href"].Value);
-                }
-            }
-            catch (Exception)
-            {
-                SetListBoxMessage("无影片快照");
-            }
+            //try
+            //{
+            //    //获取影片快照
+            //    HtmlNodeCollection dNode = doc.DocumentNode.SelectNodes("//a[@class='sample-box']");
+            //    foreach (var item in dNode)
+            //    {
+            //        m.ListSnapshotUrl.Add(item.Attributes["href"].Value);
+            //        SetListBoxMessage(item.Attributes["href"].Value);
+            //    }
+            //}
+            //catch (Exception)
+            //{
+            //    SetListBoxMessage("无影片快照");
+            //}
 
-            try
-            {
-                //获取缩小的影片快照
-                HtmlNode eNode = doc.DocumentNode.SelectSingleNode("//div[@id='sample-waterfall']");
-                HtmlNodeCollection htmlNodesShort = eNode.SelectNodes(".//img");  //获取下面的全部img标签
-                foreach (var item in htmlNodesShort)
-                {
-                    m.ListSmallSnapshotUrl.Add(item.Attributes["src"].Value);
-                    SetListBoxMessage(item.Attributes["src"].Value);
-                }
-            }
-            catch (Exception)
-            {
-                SetListBoxMessage("无影片快照");
-            }
+            //try
+            //{
+            //    //获取缩小的影片快照
+            //    HtmlNode eNode = doc.DocumentNode.SelectSingleNode("//div[@id='sample-waterfall']");
+            //    HtmlNodeCollection htmlNodesShort = eNode.SelectNodes(".//img");  //获取下面的全部img标签
+            //    foreach (var item in htmlNodesShort)
+            //    {
+            //        m.ListSmallSnapshotUrl.Add(item.Attributes["src"].Value);
+            //        SetListBoxMessage(item.Attributes["src"].Value);
+            //    }
+            //}
+            //catch (Exception)
+            //{
+            //    SetListBoxMessage("无影片快照");
+            //}
 
             ////////////////////////////////////////////
             ////所有获取到的演员和影片信息插入数据库////
@@ -298,23 +336,23 @@ namespace JAVDB
             {
                 for (int i = 0; i < m.ListActerName.Count; i++)
                 {
-                    if (await Task.Run(() => data.CheckActer(m.ListActerName[i].ToString())))  //判断是否有此女演员资料,若无，则进入演员主页抓取资料插入表中
-                    {
-                        boolGetActerInfo = true;
-                    }
-                    else
-                    {
-                         boolGetActerInfo = await Task.Run(() => 
-                         GetActerIndexHtmlInfo(m.ListActerName[i].ToString(), cc.CheckUrl(m.ListActerImgUrl[i].ToString()), cc.CheckUrl(m.ListActerIndexUrl[i].ToString())));
-                        if (!boolGetActerInfo)
-                        {
-                            SetListBoxMessage("获取女演员：" + m.ListActerName[i].ToString() + " 资料失败");
-                            break;
-                        }
-                    }
+                    //if (await Task.Run(() => data.CheckActer(m.ListActerName[i].ToString())))  //判断是否有此女演员资料,若无，则进入演员主页抓取资料插入表中
+                    //{
+                    //    boolGetActerInfo = true;
+                    //}
+                    //else
+                    //{
+                    //     boolGetActerInfo = await Task.Run(() => 
+                    //     GetActerIndexHtmlInfo(m.ListActerName[i].ToString(), cc.CheckUrl(m.ListActerImgUrl[i].ToString()), cc.CheckUrl(m.ListActerIndexUrl[i].ToString())));
+                    //    if (!boolGetActerInfo)
+                    //    {
+                    //        SetListBoxMessage("获取女演员：" + m.ListActerName[i].ToString() + " 资料失败");
+                    //        break;
+                    //    }
+                    //}
 
-                    if (boolGetActerInfo)
-                    {
+                    //if (boolGetActerInfo)
+                    //{
                         //开始获取影片海报和快照图片，并写入到硬盘返回本地网站url更新list，
                         //由于多演员的影片每个演员专辑下都要保存图片，所以获取大小封面的方法要多跑
                         if (m.ImgUrl.Length > 0)
@@ -329,25 +367,25 @@ namespace JAVDB
                             );
                         }
 
-                        for (int k = 0; k < m.ListSnapshotUrl.Count; k++)
-                        {
-                            m.bShotImg.Add(null);
-                            m.bSmallShotImg.Add(null);
-                            if (m.ListSnapshotUrl[k].ToString().Length > 0)
-                            {
-                                m.ListSnapshotUrl[k] = await Task.Run(() =>
-                                f.SaveMovieShotImg(ref m, m.Code, m.MovieName, m.ListActerName[i].ToString(), m.ListSnapshotUrl[k].ToString(), k + 1)
-                                );
-                            }
-                            if (m.ListSmallSnapshotUrl[k].ToString().Length > 0)
-                            {
-                                m.ListSmallSnapshotUrl[k] = await Task.Run(() =>
-                                f.SaveMovieSmallShotImg(ref m, m.Code, m.MovieName, m.ListActerName[i].ToString(), m.ListSmallSnapshotUrl[k].ToString(), k + 1)
-                                );
-                            }
-                        }
+                        //for (int k = 0; k < m.ListSnapshotUrl.Count; k++)
+                        //{
+                        //    m.bShotImg.Add(null);
+                        //    m.bSmallShotImg.Add(null);
+                        //    if (m.ListSnapshotUrl[k].ToString().Length > 0)
+                        //    {
+                        //        m.ListSnapshotUrl[k] = await Task.Run(() =>
+                        //        f.SaveMovieShotImg(ref m, m.Code, m.MovieName, m.ListActerName[i].ToString(), m.ListSnapshotUrl[k].ToString(), k + 1)
+                        //        );
+                        //    }
+                        //    if (m.ListSmallSnapshotUrl[k].ToString().Length > 0)
+                        //    {
+                        //        m.ListSmallSnapshotUrl[k] = await Task.Run(() =>
+                        //        f.SaveMovieSmallShotImg(ref m, m.Code, m.MovieName, m.ListActerName[i].ToString(), m.ListSmallSnapshotUrl[k].ToString(), k + 1)
+                        //        );
+                        //    }
+                        //}
 
-                    }
+                    //}
                 }
             }
             else
@@ -366,64 +404,64 @@ namespace JAVDB
                     );
                 }
 
-                for (int k = 0; k < m.ListSnapshotUrl.Count; k++)
-                {
-                    m.bShotImg.Add(null);
-                    m.bSmallShotImg.Add(null);
-                    if (m.ListSnapshotUrl[k].ToString().Length > 0)
-                    {
-                        m.ListSnapshotUrl[k] = await Task.Run(() =>
-                            f.SaveMovieShotImg(ref m, m.Code, m.MovieName, strNoNameActer, m.ListSnapshotUrl[k].ToString(), k + 1)
-                            );
-                    }
-                    if (m.ListSmallSnapshotUrl[k].ToString().Length > 0)
-                    {
-                        m.ListSmallSnapshotUrl[k] = await Task.Run(() =>
-                        f.SaveMovieSmallShotImg(ref m, m.Code, m.MovieName, strNoNameActer, m.ListSmallSnapshotUrl[k].ToString(), k + 1)
-                        );
-                    }
-                }
+                //for (int k = 0; k < m.ListSnapshotUrl.Count; k++)
+                //{
+                //    m.bShotImg.Add(null);
+                //    m.bSmallShotImg.Add(null);
+                //    if (m.ListSnapshotUrl[k].ToString().Length > 0)
+                //    {
+                //        m.ListSnapshotUrl[k] = await Task.Run(() =>
+                //            f.SaveMovieShotImg(ref m, m.Code, m.MovieName, strNoNameActer, m.ListSnapshotUrl[k].ToString(), k + 1)
+                //            );
+                //    }
+                //    if (m.ListSmallSnapshotUrl[k].ToString().Length > 0)
+                //    {
+                //        m.ListSmallSnapshotUrl[k] = await Task.Run(() =>
+                //        f.SaveMovieSmallShotImg(ref m, m.Code, m.MovieName, strNoNameActer, m.ListSmallSnapshotUrl[k].ToString(), k + 1)
+                //        );
+                //    }
+                //}
             }
 
-            if (boolGetActerInfo)
-            {
-                //开始写入影片信息到数据表
-                string strDirectorid = "";
-                string strMakerid = "";
-                string strPublisherid = "";
-                string strSeriesid = "";
+            //if (boolGetActerInfo)
+            //{
+            //    //开始写入影片信息到数据表
+            //    string strDirectorid = "";
+            //    string strMakerid = "";
+            //    string strPublisherid = "";
+            //    string strSeriesid = "";
 
-                //获取影片各属性id
-                if (m.Director.Length > 0)
-                {
-                    strDirectorid = await Task.Run(()=> data.CheckInsertDirector(m.Director));
-                }
-                if (m.Maker.Length > 0)
-                {
-                    strMakerid = await Task.Run(() => data.CheckInsertMaker(m.Maker));
-                }
-                if (m.Publisher.Length > 0)
-                {
-                    strPublisherid = await Task.Run(() => data.CheckInsertPublisher(m.Publisher));
-                }
-                if (m.Series.Length > 0)
-                {
-                    strSeriesid = await Task.Run(() => data.CheckInsertSeries(m.Series));
-                }
-                if (m.ListType.Count > 0)
-                {
-                    foreach (var item in m.ListType)
-                    {
-                        await Task.Run(() => data.CheckInsertType(item.ToString()));
-                    }
-                }
+            //    //获取影片各属性id
+            //    if (m.Director.Length > 0)
+            //    {
+            //        strDirectorid = await Task.Run(()=> data.CheckInsertDirector(m.Director));
+            //    }
+            //    if (m.Maker.Length > 0)
+            //    {
+            //        strMakerid = await Task.Run(() => data.CheckInsertMaker(m.Maker));
+            //    }
+            //    if (m.Publisher.Length > 0)
+            //    {
+            //        strPublisherid = await Task.Run(() => data.CheckInsertPublisher(m.Publisher));
+            //    }
+            //    if (m.Series.Length > 0)
+            //    {
+            //        strSeriesid = await Task.Run(() => data.CheckInsertSeries(m.Series));
+            //    }
+            //    if (m.ListType.Count > 0)
+            //    {
+            //        foreach (var item in m.ListType)
+            //        {
+            //            await Task.Run(() => data.CheckInsertType(item.ToString()));
+            //        }
+            //    }
 
-                SetListBoxMessage("开始写入影片信息到数据库");
-                if (await Task.Run(() => data.InsertMovieInfo(m, strDirectorid, strMakerid, strPublisherid, strSeriesid)))
-                {
-                    SetListBoxMessage("影片抓取成功");
-                }
-            }
+            //    SetListBoxMessage("开始写入影片信息到数据库");
+            //    if (await Task.Run(() => data.InsertMovieInfo(m, strDirectorid, strMakerid, strPublisherid, strSeriesid)))
+            //    {
+            //        SetListBoxMessage("影片抓取成功");
+            //    }
+            //}
 
             SetListBoxMessage("");
         }

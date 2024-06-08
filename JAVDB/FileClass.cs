@@ -228,7 +228,14 @@ namespace JAVDB
             string strPath = "";
             for (int i = 0; i < strPaths.Length - 1; i++)
             {
-                strPath += strPaths[i] + "\\";
+                if (i == strPaths.Length - 2)
+                {
+                    strPath += strPaths[i];
+                }
+                else
+                {
+                    strPath += strPaths[i] + "\\";
+                }
             }
 
             DirectoryInfo dir = new DirectoryInfo(strPath);  //若路径存在则跳过，不存在则创建路径
@@ -246,7 +253,7 @@ namespace JAVDB
             }
 
             byte[] b;
-            FileStream fs = new FileStream(strPathFull, FileMode.Create);
+            FileStream fs = new FileStream(strPathFull, FileMode.CreateNew);
             BinaryWriter w = new BinaryWriter(fs);
             try
             {
