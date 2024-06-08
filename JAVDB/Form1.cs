@@ -111,7 +111,7 @@ namespace JAVDB
                     catch (Exception)
                     {
                         SetListBoxMessage("CODE没有搜索到结果，中断执行。");
-                        return;
+                        continue;
                     }
 
                     await GetMovieIndexHtmlInfo(url, strSmallImgUrl);
