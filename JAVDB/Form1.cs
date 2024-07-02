@@ -265,16 +265,29 @@ namespace JAVDB
                             if (htmlNodesActer[0].InnerHtml == "演員:")
                             {
                                 HtmlNodeCollection htmlNodesActerName = item.SelectNodes(".//a");
+                                HtmlNodeCollection htmlNodesActerSex = item.SelectNodes(".//strong");
                                 if (htmlNodesActerName.Count > 0)
                                 {
-                                    foreach (var item2 in htmlNodesActerName)
+                                    for (int i = 0; i < htmlNodesActerName.Count; i++)
                                     {
-                                        m.ListActerName.Add(item2.InnerHtml.Trim());
-                                        SetListBoxMessage(item2.InnerHtml.Trim());
+                                        if (htmlNodesActerSex[i+1].InnerHtml == "♀")  //筛选性别，只获取女性别演员
+                                        {
+                                            m.ListActerName.Add(htmlNodesActerName[i].InnerHtml.Trim());
+                                            SetListBoxMessage(htmlNodesActerName[i].InnerHtml.Trim());
 
-                                        m.ListActerIndexUrl.Add(item2.Attributes["href"].Value);
-                                        SetListBoxMessage(item2.Attributes["href"].Value);
+                                            m.ListActerIndexUrl.Add(htmlNodesActerName[i].Attributes["href"].Value);
+                                            SetListBoxMessage(htmlNodesActerName[i].Attributes["href"].Value);
+                                        }
                                     }
+
+                                    //foreach (var item2 in htmlNodesActerName)
+                                    //{
+                                    //    m.ListActerName.Add(item2.InnerHtml.Trim());
+                                    //    SetListBoxMessage(item2.InnerHtml.Trim());
+
+                                    //    m.ListActerIndexUrl.Add(item2.Attributes["href"].Value);
+                                    //    SetListBoxMessage(item2.Attributes["href"].Value);
+                                    //}
                                 }
                                 break;
                             }
